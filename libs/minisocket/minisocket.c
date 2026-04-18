@@ -1,6 +1,10 @@
 
-#include "minisocket.h"
 #include <string.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
+#include "minisocket.h"
+#include "utils.h"
 
 // ================  Init / Cleanup  ================
 int ms_init() {
@@ -16,6 +20,16 @@ void ms_cleanup() {
     #ifdef _WIN32
         WSACleanup();
     #endif
+}
+
+void ms_close(ms_socket_t sock){
+#ifdef _WIN32
+    shutdown(sock, SD_BOTH);
+    closesocket(sock);
+#else
+    shutdown(sock, SHUT_RDWR);
+    close(sock);
+#endif
 }
 
 // ================  Socket  ================
@@ -37,10 +51,6 @@ ms_socket_t ms_socket_create(){
 
 ms_socket_t ms_socket_create_v6(){
     return socket(AF_INET6, SOCK_STREAM, 0);
-}
-
-void ms_close_socket(ms_socket_t sock){
-    ms_close(sock);
 }
 
 // ================  Client  ================
@@ -112,12 +122,65 @@ ms_socket_t ms_accept(ms_socket_t server, char* ip, int* port){
 }
 
 // ================  Send / Recive  ================
-int ms_send(ms_socket_t sock, const void* data, int size) {
-    return send(sock, (const char*)data, size, 0);
+int ms_send(ms_socket_t sock, const char* buffer, int size) {
+    return send(sock, buffer, size, 0);
 }
 
-int ms_recv(ms_socket_t sock, void* buffer, int size) {
-    return recv(sock, (char*)buffer, size, 0);
+int ms_send_all(ms_socket_t sock, const void* buffer, int size) {
+    
+    size_t total = 0;
+    const char* ptr = (const char*)buffer;
+
+    while (total < size) {
+        int sent = send(sock, ptr + total, (int)(size - total), 0);
+
+        if (sent <= 0){
+
+            #ifndef _WIN32
+            if (errno == EINTR) continue;
+            #endif
+
+            return -1;
+        }
+
+        total += sent;
+    }
+
+    return (int)total;
+}
+
+
+int ms_recv(ms_socket_t sock, char* buffer, int size) {
+    return recv(sock, buffer, size, 0);
+}
+
+int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
+    
+    size_t total = 0;
+
+    char* ptr = (char*)buffer;
+
+    while(total < size) {
+        int bytes_received = ms_recv(sock, ptr + total, size - total);
+        
+
+        if (bytes_received < 0) {
+        #ifndef _WIN32
+            if (errno == EINTR) continue;
+        #endif
+            return -1;
+        }
+
+
+        if(bytes_received < 0) {
+            return -1; // Erro
+        }
+
+        total += (size_t)bytes_received;
+    }
+    
+    return (int)total;
+
 }
 
 
@@ -133,7 +196,7 @@ int ms_last_error() {
 
 
 // ===================================
-int ms_isValidPath(char* path) {
+int ms_isValidPath( const char* path) {
     if (!path || !*path) return 0;
 
     #ifdef _WIN32
@@ -150,49 +213,24 @@ int ms_isValidPath(char* path) {
     return 1;
 }
 
-// ================  Utils  ================
-static int isDigit(char c) {
-    return c >= '0' && c <= '9';
-}
-
-static int contCharInStr(const char* str, char c) {
-    int count = 0;
-    for (int i = 0; str[i]; i++) {
-        if (str[i] == c) count++;
-    }
-    return count;
-}
-
-static int getStrUntilChar(const char* str, char c, char* buffer, int bufferSize) {
-    int i = 0;
-    while (str[i] && str[i] != c && i < bufferSize - 1) {
-        buffer[i] = str[i];
-        i++;
-    }
-    buffer[i] = '\0';
-    return i;
-}
-
-static int isNumber(const char* str) {
-    if (!str || !*str) return 0;
-
-    for (int i = 0; str[i]; i++) {
-        if (!isDigit(str[i])) return 0;
-    }
-    return 1;
-}
-
-static int toNumber(const char* str) {
-    int num = 0;
-    for (int i = 0; str[i]; i++) {
-        num = num * 10 + (str[i] - '0');
-    }
-    return num;
-}
-
 // =======================================
 
 int ms_isValidIp(const char* ip) {
+    struct sockaddr_in sa;
+
+    #ifdef _WIN32                
+        int sa_len = sizeof(sa);
+        int result = WSAStringToAddressA((LPSTR)ip, AF_INET, NULL, (LPSOCKADDR)&sa, &sa_len);
+        return result == 0;
+
+    #else
+        return inet_pton(AF_INET, ip, &(sa.sin_addr)) == 1;
+    #endif
+
+}
+
+#ifdef n
+int UNUSET_ms_isValidIp(const char* ip) {
 
     if(!ip || ip[0] == '\0') return 0;
 
@@ -231,3 +269,4 @@ int ms_isValidIp(const char* ip) {
 
     return *ptr == '\0';
 }
+#endif

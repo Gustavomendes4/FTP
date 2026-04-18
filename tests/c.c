@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "minisocket.h"
+#include "utils.h"
 
 int main() {
     if (ms_init() != 0) {
@@ -16,11 +17,6 @@ int main() {
         return EXIT_FAILURE;
     }
     printf("Socket created successfully\n");
-
-
-
-
-
 
 
     ms_close_socket(sock);
