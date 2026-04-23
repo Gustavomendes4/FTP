@@ -1,5 +1,24 @@
+/*
+
+    O presente programa tem como objetivo o envio e recebimento 
+    de pacotes em socket utilizando a lib minisocket.
+
+    A ideia é implementar o envio e recebimento de pacotes:
+        [HEADER]
+        [ BODY ]
+
+    Isso é feito através das funções sys_send_packet() e sys_recive_packet, 
+    que enviam e recebem pacotes recebendo por parâmetro o header e o body, respectivamente.
+
+    Acima disto, existe uma segunda camada de abstração, representada pelas funções: send_packe e recv_packet.
+    Esta camada recebe apenas o conteúdo e o seu tamanho, enviando-o com um header padrão.
+
+
+    Gustavo dos Santos Mendes, 22/04/2026.
+*/
 
 #include <stdint.h>
+#include <stdio.h>
 
 #include "utils.h"
 #include "packet.h"
@@ -36,29 +55,7 @@ static void ntoh_header(PacketHeader* head){
     head->payloadSize = ntohll(head->payloadSize);
 }
 
-//========================
-
-PacketHeader newHeader(){
-    PacketHeader header;
-    header.type = MSG_EMPTY;
-    header.version = 1;
-    header.flags = 0;
-    header.payloadSize = 0;
-    header.magic = PACKET_MAGIC_NUMBER;
-
-    return header;
-}
-
-Packet newPacket(uint8_t* payload, uint64_t max){
-    Packet ret;
-
-    ret.buffer = payload;
-    ret.maxSize = max;
-
-    return ret;
-}
-
-int validateHeader(const PacketHeader* header){
+static int validateHeader(const PacketHeader* header){
 
     if( header->magic != PACKET_MAGIC_NUMBER )
         return -1;
@@ -69,7 +66,12 @@ int validateHeader(const PacketHeader* header){
     return 0;
 }
 
-int32_t sys_send_packet(ms_socket_t* socket, PacketHeader* header, Packet* payload){
+//================================================
+
+
+//  ==========____SEND__/__RECIVE____==============
+
+int32_t send_packet(ms_socket_t* socket, PacketHeader* header, PacketPayload* payload){
 
     if (!socket || !header || !payload)
         return -99;
@@ -98,21 +100,8 @@ int32_t sys_send_packet(ms_socket_t* socket, PacketHeader* header, Packet* paylo
     return header->type;
 }
 
-int32_t send_packet(ms_socket_t* socket, void* payload, uint64_t payload_size){
-    
-    // if(payload_size > MAX_PAYLOAD_SIZE)
-    //     return -10;
-
-    Packet pck = newPacket( (uint8_t*)payload, payload_size);
-
-    PacketHeader head = newHeader();
-    head.payloadSize = payload_size;
-
-    return sys_send_packet(socket, &head, &pck);
-}
-
-// retorno: (> 0)  → bytes lidos (completo)     (0)    → conexão fechada    (-1)   → erro
-int32_t sys_recv_packet(ms_socket_t* socket, PacketHeader* header, Packet* payload){
+int32_t recv_packet(ms_socket_t* socket, PacketHeader* header, PacketPayload* payload){
+    // retorno: (> 0)  → bytes lidos (completo)     (0)    → conexão fechada    (-1)   → erro
 
     int bytes_received = ms_recv_all(*socket, header, sizeof(PacketHeader));
 
@@ -148,12 +137,73 @@ int32_t sys_recv_packet(ms_socket_t* socket, PacketHeader* header, Packet* paylo
     return header->type; // Return message type
 }
 
-int32_t recv_packet(ms_socket_t* socket, void* payload, uint64_t payload_maxSize){
 
-    Packet pck = newPacket((uint8_t*)payload, payload_maxSize);
+//  ===========____SEND_/_RECIVE -> BUFFER____===============
+
+int32_t recv_buffer(ms_socket_t* socket, void* payload, uint64_t payload_maxSize){
+
+    PacketPayload pck = newPacketPayload((uint8_t*)payload, payload_maxSize);
 
     PacketHeader head;
 
-    return sys_recv_packet(socket, &head, &pck);
-
+    return recv_packet(socket, &head, &pck);
 }
+
+int32_t send_buffer(ms_socket_t* socket, void* payload, uint64_t payload_size){
+    
+    // if(payload_size > MAX_PAYLOAD_SIZE)
+    //     return -10;
+
+    PacketPayload pck = newPacketPayload( (uint8_t*)payload, payload_size);
+
+    PacketHeader head = newHeader();
+    head.payloadSize = payload_size;
+
+    return send_packet(socket, &head, &pck);
+}
+
+
+//  ===========______DEBUG______===============
+
+void printHeader(PacketHeader head){
+    
+    printf("[Header] { magic: 0x%x | version: %d | type: %d | flags: %d | payloadSize: %lld } \n", \
+    (int)head.magic, (int)head.version, (int)head.type, (int)head.flags, head.payloadSize);
+    
+}
+
+
+//  ===========______HEADER______===============
+
+PacketHeader newHeader(){
+    return newHeaderType(MSG_DEFAULT);
+}
+
+PacketHeader newHeaderType(uint32_t type){
+    PacketHeader header;
+
+    header.version = PACKETSIZE_VERSION;
+    header.magic = PACKET_MAGIC_NUMBER;
+    
+    header.type = type;
+    
+    header.flags = 0;
+    header.payloadSize = 0;
+
+    return header;
+}
+
+
+//  ===========______PACKET______===============
+
+PacketPayload newPacketPayload(uint8_t* payload, uint64_t max){
+    PacketPayload ret;
+
+    ret.buffer = payload;
+    ret.maxSize = max;
+
+    return ret;
+}
+
+
+

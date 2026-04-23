@@ -111,17 +111,55 @@ int main(int argc, char* argv[]){
         return -10;
     }
 
-    /// ========= | TESTE |   ========= ///
+    /// ========= | Envia soliciatação de arquivo |   ========= ///
 
-    const char* str = "Gustav0 dos Santos Mendes";
+        Packet packet;
+    PacketHeader header;
+    
 
-    int32_t rec = send_packet( &sock, (void*)str, strlen(str)+1);
+    int32_t ret;
+    const char* str = "Gustavo dos Santos Mendes";
 
-    if(rec < 0){
-        fprintf(stderr, "Error in receive\n");
+
+    PacketHeader head = newHeaderType(MSG_GET_FILE);
+    Packet packet = newPacket((uint8_t*)str, strlen(str));
+
+    // head.flags;
+    // head.magic;
+    // head.payloadSize;
+    // head.type;
+    // head.version;
+    
+
+    ret = send_buffer(&sock, argv[3], strlen(argv[3]));
+
+
+    if(ret < 0){
+        fprintf(stderr, "Error to send path\n");
         //close socket and file .
         return -11;
     }
+
+    
+
+
+    int size = 1;
+
+    char buffer[1000];
+
+    while(1){
+
+        int32_t rec = recv_buffer( &sock, (void*)buffer, 1000);
+    
+        if(rec < 0){
+            fprintf(stderr, "Error in receive\n");
+            //close socket and file .
+            return -11;
+        }
+
+    }
+
+
 
     printf("Enviado! \n");
 

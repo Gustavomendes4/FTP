@@ -26,6 +26,7 @@
 
 const char* ip = "192.168.1.10";
 const int port = 8000;
+
 const char* str = "Gustav0 dos Santos Mendes";
 
 int main(int argc, char* argv[]){
