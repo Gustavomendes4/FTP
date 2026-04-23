@@ -23,5 +23,8 @@ int contCharInStr(const char* str, char c);
 
 int getStrUntilChar(const char* str, char c, char* buffer, int bufferSize);
 
+int isValidIp(const char* ip);
+
+int isValidPort(const char* port);
 
 #endif

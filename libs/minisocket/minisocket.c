@@ -1,7 +1,5 @@
 
 #include <string.h>
-#include <winsock2.h>
-#include <ws2tcpip.h>
 
 #include "minisocket.h"
 #include "utils.h"
@@ -49,10 +47,6 @@ ms_socket_t ms_socket_create(){
     */
 }
 
-ms_socket_t ms_socket_create_v6(){
-    return socket(AF_INET6, SOCK_STREAM, 0);
-}
-
 // ================  Client  ================
 int ms_connect(ms_socket_t sock, const char* ip, int port){
     
@@ -88,8 +82,19 @@ int ms_listen(ms_socket_t sock, int backlog){
     return listen(sock, backlog);
 }
 
+int ms_initServer(ms_socket_t sock, int port, int backlog){
+
+    if( ms_bind(sock, port) != 0)
+        return -1; //error
+
+    return ms_listen(sock, backlog);
+}
+
 ms_socket_t ms_accept(ms_socket_t server, char* ip, int* port){
     
+    // ip = ip do client conectado
+    // port = porta do client conectado
+
     struct sockaddr_in addr;
 
     #ifdef _WIN32
@@ -132,7 +137,7 @@ int ms_send_all(ms_socket_t sock, const void* buffer, int size) {
     const char* ptr = (const char*)buffer;
 
     while (total < size) {
-        int sent = send(sock, ptr + total, (int)(size - total), 0);
+        int sent = ms_send(sock, ptr + total, (int)(size - total));
 
         if (sent <= 0){
 
@@ -143,12 +148,11 @@ int ms_send_all(ms_socket_t sock, const void* buffer, int size) {
             return -1;
         }
 
-        total += sent;
+        total += (size_t)sent;
     }
 
     return (int)total;
 }
-
 
 int ms_recv(ms_socket_t sock, char* buffer, int size) {
     return recv(sock, buffer, size, 0);
@@ -171,18 +175,12 @@ int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
             return -1;
         }
 
-
-        if(bytes_received < 0) {
-            return -1; // Erro
-        }
-
         total += (size_t)bytes_received;
     }
     
     return (int)total;
 
 }
-
 
 // ================  Other  ================
 
@@ -217,6 +215,7 @@ int ms_isValidPath( const char* path) {
 
 int ms_isValidIp(const char* ip) {
     struct sockaddr_in sa;
+    memset(&sa, 0, sizeof(sa));
 
     #ifdef _WIN32                
         int sa_len = sizeof(sa);
@@ -227,46 +226,5 @@ int ms_isValidIp(const char* ip) {
         return inet_pton(AF_INET, ip, &(sa.sin_addr)) == 1;
     #endif
 
-}
+}   
 
-#ifdef n
-int UNUSET_ms_isValidIp(const char* ip) {
-
-    if(!ip || ip[0] == '\0') return 0;
-
-    int len = strlen(ip);
-    if( len > 15 || len < 7 ) return 0;
-
-    if( contCharInStr(ip, '.') != 3 ) return 0;
-
-
-    ///
-
-    const char* ptr = ip;
-    char octet[4];
-
-    for(int segment = 0; segment < 4; segment++) {
-        
-        len = getStrUntilChar(ptr, '.', octet, sizeof(octet));
-        
-        if (len == 0 || len > 3) return 0;
-
-        if (len == 3 && ptr[len] != '.' && ptr[len] != '\0') return 0;
-        
-        if( !isNumber(octet) ) return 0;
-        
-        int num = toNumber(octet);
-        
-        if (num > 255 || num < 0) return 0;
-        
-        ptr += len;
-        
-        if (segment < 3) {
-            if (*ptr != '.') return 0;
-            ptr++; // pula '.'
-        }
-    }
-
-    return *ptr == '\0';
-}
-#endif

@@ -7,6 +7,7 @@
 
 
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "utils.h"
@@ -123,3 +124,53 @@ int getStrUntilChar(const char* str, char c, char* buffer, int bufferSize) {
     return i;
 }
 
+int isValidIp(const char* ip) {
+
+    if(!ip || ip[0] == '\0') return 0;
+
+    int len = strlen(ip);
+    if( len > 15 || len < 7 ) return 0;
+
+    if( contCharInStr(ip, '.') != 3 ) return 0;
+
+
+    ///
+
+    const char* ptr = ip;
+    char octet[4];
+
+    for(int segment = 0; segment < 4; segment++) {
+        
+        len = getStrUntilChar(ptr, '.', octet, sizeof(octet));
+        
+        if (len == 0 || len > 3) return 0;
+
+        if (len == 3 && ptr[len] != '.' && ptr[len] != '\0') return 0;
+        
+        if( !isNumber(octet) ) return 0;
+        
+        int num = toNumber(octet);
+        
+        if (num > 255 || num < 0) return 0;
+        
+        ptr += len;
+        
+        if (segment < 3) {
+            if (*ptr != '.') return 0;
+            ptr++; // pula '.'
+        }
+    }
+
+    return *ptr == '\0';
+}
+
+int isValidPort(const char* port) {
+    
+    if(!port || port[0] == '\0') return 0;
+
+    if( !isNumber(port) ) return 0;
+
+    int portNum = toNumber(port);
+
+    return (portNum > 0 && portNum <= 65535);
+}

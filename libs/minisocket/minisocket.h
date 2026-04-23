@@ -22,8 +22,6 @@
     #include <unistd.h>
     #include <cerrno>
 
-
-
     typedef int ms_socket_t;
     #define ms_invalid -1
 
@@ -37,11 +35,10 @@
 // ================  Init / Cleanup  ================
 int ms_init();
 void ms_cleanup();
-void ms_close(ms_socket_t sock);
 
 // ================  Socket  ================
 ms_socket_t ms_socket_create();
-void ms_close_socket(ms_socket_t sock);
+void ms_close(ms_socket_t sock);
 
 // ================  Client  ================
 int ms_connect(ms_socket_t sock, const char* ip, int port);
@@ -49,6 +46,7 @@ int ms_connect(ms_socket_t sock, const char* ip, int port);
 // ================  Server  ================
 int ms_bind(ms_socket_t sock, int port);
 int ms_listen(ms_socket_t sock, int backlog);
+int ms_initServer(ms_socket_t sock, int port, int backlog);
 ms_socket_t ms_accept(ms_socket_t server, char* ip, int* port);
 
 // ================  Send / Recive  ================
