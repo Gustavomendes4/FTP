@@ -2,13 +2,14 @@
 #define PACKET_H_INCLUDED
 
 #include <stdint.h>
+#include <stdlib.h>
+
 
 #include "minisocket.h"
 
 #define PACKETSIZE_VERSION 1
 #define MAX_PAYLOAD_SIZE 2048
 #define PACKET_MAGIC_NUMBER 0xBABE
-
 
 // FLAGS
 #define FLAG_NONE   0x00
@@ -27,6 +28,7 @@ typedef enum{
     MSG_LIST_FILES,
 
     //Response
+    MSG_FILE_FOUND, // ok, vou mandar
     MSG_FILE_CONTENT,
     MSG_FILE_LIST,
     MSG_ACK,
@@ -44,14 +46,24 @@ typedef struct {
     
     uint32_t type;
     uint32_t flags;
-    uint64_t payloadSize;
+    uint64_t payloadSize; // it is constant
 } PacketHeader;
 
 typedef struct{
     uint64_t maxSize;
+
+    uint64_t size;
+
     uint8_t* buffer;
 } PacketPayload;
 
+typedef struct{
+
+PacketHeader header;
+
+PacketPayload payload;
+
+}Packet;
 
 //  ===========    SEND / RECIV    ===============
 
@@ -75,5 +87,19 @@ PacketHeader newHeaderType(uint32_t);
 //  ===========     PACKET  ===============
 
 PacketPayload newPacketPayload(uint8_t* payload, uint64_t max);
+
+// ============= Maior NIVEL: PACKET ================
+
+Packet pck_newPacket(size_t contBytes);
+
+void pck_delPacket(Packet* pck);
+
+//  Validations
+int pck_isValidPacket(Packet pack);
+
+// Send / recv
+int32_t pck_sendPacket(ms_socket_t* sock, Packet* packet);
+
+int32_t pck_recvPacket(ms_socket_t* sock, Packet* packet);
 
 #endif // PACKET_H_INCLUDED

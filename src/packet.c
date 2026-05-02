@@ -194,7 +194,7 @@ PacketHeader newHeaderType(uint32_t type){
 }
 
 
-//  ===========______PACKET______===============
+//  ===========______Payload______===============
 
 PacketPayload newPacketPayload(uint8_t* payload, uint64_t max){
     PacketPayload ret;
@@ -206,4 +206,61 @@ PacketPayload newPacketPayload(uint8_t* payload, uint64_t max){
 }
 
 
+// ============================
+
+Packet pck_newPacket(size_t contBytes){
+
+    Packet packet = {0};
+    uint8_t* buffer;
+    
+    if(contBytes > 0){
+        buffer = (uint8_t*)malloc(contBytes);
+
+        if(buffer == NULL)
+            return (Packet){0}; // error on allocation    
+    }
+    else{
+        buffer = NULL;
+    }
+
+
+    //  Create header    
+    packet.header = newHeader();
+    packet.header.payloadSize = contBytes;
+
+    //  Create payload
+    packet.payload = newPacketPayload(buffer, contBytes);
+
+    return packet;
+}
+
+void pck_delPacket(Packet* pck){
+
+    if(pck == NULL)
+        return;
+
+    free(pck->payload.buffer);
+
+    *pck = (Packet){0};
+}
+
+
+int pck_isValidPacket(Packet pack){
+    if(pack.header.magic != PACKET_MAGIC_NUMBER)
+        return 0;
+
+    if(pack.header.payloadSize > pack.payload.maxSize)
+        return 0;
+
+    return 1;
+}
+
+// Send / recv
+int32_t pck_sendPacket(ms_socket_t* sock, Packet* packet){
+    return send_packet(sock, &(packet->header), &(packet->payload));
+}
+
+int32_t pck_recvPacket(ms_socket_t* sock, Packet* packet){
+    return recv_packet(sock, &(packet->header), &(packet->payload));
+}
 

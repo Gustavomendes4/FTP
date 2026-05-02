@@ -6,11 +6,26 @@
 
     Gustavo dos Santos Mendes, 16/04/2026.
 
-    argv[0]: -.exe
+    argv[0]: client.exe
     argv[1]: <server_ip>
     argv[2]: <port>
     argv[3]: <remote_file_path>
     argv[4]: <local_new_file_path>
+
+
+    - nextstep:
+    |   
+    |    argv[0]: client.exe
+    |    argv[1]: <server_ip>
+    |    argv[2]: <port>
+
+    |    argv[3]: <OPERATION>
+        | GET_FILE, POST_FILE, DELETE_FILE, LIST_FILE
+        | GET_DIR,  POST_DIR, DELETE_DIR, LIST_DIR
+
+    argv[4]: <remote_file_path>
+    argv[5]: <local_new_file_path>
+
 
 */
 
@@ -23,6 +38,20 @@
 
 #include "utils.h"
 
+static uint64_t htonll(uint64_t v){
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    return ((uint64_t)htonl((uint32_t)(v >> 32))) |
+           ((uint64_t)htonl((uint32_t)(v & 0xFFFFFFFF)) << 32);
+#else
+    return v;
+#endif
+}
+
+static uint64_t ntohll(uint64_t v){
+    return htonll(v);
+}
+
+
 int input_validation(int argc, char* argv[]){
 
     if(argc < 5){
@@ -30,7 +59,8 @@ int input_validation(int argc, char* argv[]){
         return -1;
     }
 
-    if( !ms_isValidIp(argv[1]) ){
+    if( !isValidIp(argv[1]) ){
+    // if( !ms_isValidIp(argv[1]) ){
         fprintf(stderr, "%s is not a valid server IP address.\n", argv[1]);
         return -2;
     }
@@ -65,7 +95,7 @@ int open_safe(FILE** file, const char* path, const char* mode) {
 }
 
 int create_socket(ms_socket_t* sock, const char* ip, int port){
-    
+
     if(ms_init() != 0) {
         fprintf(stderr, "Could not initialize socket library\n");
         return -10;
@@ -76,7 +106,7 @@ int create_socket(ms_socket_t* sock, const char* ip, int port){
         return -5;
     }
 
-    if(ms_connect(*sock, ip, port) < 0) {
+    if( (ms_connect(*sock, ip, port)) < 0) {
         fprintf(stderr, "Connection failed.\n");
         return -6;
     }
@@ -85,8 +115,6 @@ int create_socket(ms_socket_t* sock, const char* ip, int port){
 }
 
 int main(int argc, char* argv[]){
-
-    ms_init();
     
     /// ========= Validação de argumentos     ========= ///
     if(input_validation(argc, argv) != 0) {
@@ -98,7 +126,7 @@ int main(int argc, char* argv[]){
     FILE *dst;
 
     if( open_safe(&dst, argv[4], "wb") != 0 ){
-        fprintf(stderr, "Could not open destination file %s\n", argv[3]);
+        fprintf(stderr, "Could not open destination file %s\n", argv[4]);
         return -5;
     }
 
@@ -112,56 +140,61 @@ int main(int argc, char* argv[]){
     }
 
     /// ========= | Envia soliciatação de arquivo |   ========= ///
-
-        Packet packet;
-    PacketHeader header;
-    
-
     int32_t ret;
-    const char* str = "Gustavo dos Santos Mendes";
 
+    PacketHeader headSend = newHeaderType(MSG_GET_FILE);
+    headSend.payloadSize = strlen(argv[3]) + 1;
 
-    PacketHeader head = newHeaderType(MSG_GET_FILE);
-    Packet packet = newPacket((uint8_t*)str, strlen(str));
-
-    // head.flags;
-    // head.magic;
-    // head.payloadSize;
-    // head.type;
-    // head.version;
+    PacketPayload packetSend = newPacketPayload((uint8_t*)argv[3], strlen(argv[3])+1);
     
-
-    ret = send_buffer(&sock, argv[3], strlen(argv[3]));
-
-
+    ret = send_packet(&sock, &headSend, &packetSend);
+    
     if(ret < 0){
         fprintf(stderr, "Error to send path\n");
         //close socket and file .
         return -11;
     }
+    
+    /// ========= |      Recebe  resposnse   |   ========= ///
+    
+    #define BUFFER_SIZE 1450
+    uint8_t buffer[BUFFER_SIZE];
+    PacketPayload packet = newPacketPayload(buffer, BUFFER_SIZE);;
+    PacketHeader header = newHeader();
+
+    header.payloadSize = sizeof(size_t);
+
+    recv_packet(&sock, &header, &packet);
+
+    printHeader(header);
+
+    uint64_t value;
+    memcpy(&value, packet.buffer, sizeof(uint64_t));
+    value = ntohll(value);
+    
+    printf("Recebi a response: %ld\n", value );
+
 
     
+    // printf(": %ld", );
 
+    // int size = 1;
 
-    int size = 1;
+    // char buffer[1000];
 
-    char buffer[1000];
+    // while(1){
 
-    while(1){
-
-        int32_t rec = recv_buffer( &sock, (void*)buffer, 1000);
+    //     int32_t rec = recv_buffer( &sock, (void*)buffer, 1000);
     
-        if(rec < 0){
-            fprintf(stderr, "Error in receive\n");
-            //close socket and file .
-            return -11;
-        }
+    //     if(rec < 0){
+    //         fprintf(stderr, "Error in receive\n");
+    //         //close socket and file .
+    //         return -11;
+    //     }
 
-    }
+    // }
 
 
-
-    printf("Enviado! \n");
 
     fclose(dst);
     ms_close(sock);

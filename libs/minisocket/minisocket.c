@@ -43,6 +43,9 @@ ms_socket_t ms_socket_create(){
         type:
             SOCK_STREAM  // TCP
             SOCK_DGRAM   // UDP
+
+            ...
+            RAW_SOCKET  // Le rede completa (sudo)
     
     */
 }
