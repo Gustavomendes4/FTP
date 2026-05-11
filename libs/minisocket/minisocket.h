@@ -1,9 +1,12 @@
-#ifndef SOCKET_H_INCLUDED
-#define SOCKET_H_INCLUDED
+#ifndef MINISOCKET_H_INCLUDED
+#define MINISOCKET_H_INCLUDED
 
 // -lws2_32
 
 // usar socket non-blocking para nao bloquear para sempre
+
+#include <stdint.h>
+#include <string.h>
 
 #if defined(_WIN32)
     
@@ -28,10 +31,6 @@
 #endif
 
 
-
-#endif // SOCKET_H_INCLUDED
-
-
 // ================  Init / Cleanup  ================
 int ms_init();
 void ms_cleanup();
@@ -50,11 +49,11 @@ int ms_initServer(ms_socket_t sock, int port, int backlog);
 ms_socket_t ms_accept(ms_socket_t server, char* ip, int* port);
 
 // ================  Send / Recive  ================
-int ms_send(ms_socket_t sock, const char* data, int size);
-int ms_send_all(ms_socket_t sock, const void* buffer, int size);
+int ms_send(ms_socket_t sock, const char* data, size_t size);
+long int ms_send_all(ms_socket_t sock, const void* buffer, size_t size);
 
-int ms_recv(ms_socket_t sock, char* buffer, int size);
-int ms_recv_all(ms_socket_t sock, void* buffer, size_t size);
+int ms_recv(ms_socket_t sock, char* buffer, size_t size);
+long int ms_recv_all(ms_socket_t sock, void* buffer, size_t size);
 
 
 // ================  Other  ================
@@ -62,4 +61,6 @@ int ms_recv_all(ms_socket_t sock, void* buffer, size_t size);
 int ms_last_error();
 
 int ms_isValidIp(const char* ip);
-int ms_isValidPath(const char* path);
+
+
+#endif // MINISOCKET_H_INCLUDED

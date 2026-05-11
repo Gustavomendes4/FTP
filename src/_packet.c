@@ -24,53 +24,6 @@
 #include "packet.h"
 #include "minisocket.h"
 
-static uint64_t htonll(uint64_t v){
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    return ((uint64_t)htonl((uint32_t)(v >> 32))) |
-           ((uint64_t)htonl((uint32_t)(v & 0xFFFFFFFF)) << 32);
-#else
-    return v;
-#endif
-}
-
-static uint64_t ntohll(uint64_t v){
-    return htonll(v);
-}
-
-static void hton_header(PacketHeader* head){
-    head->magic       = htons(head->magic);
-    head->version       = htons(head->version);
-    
-    head->type        = htonl(head->type);
-    head->flags       = htonl(head->flags);
-    head->payloadSize = htonll(head->payloadSize);
-}
-
-static void ntoh_header(PacketHeader* head){
-    head->magic       = ntohs(head->magic);
-    head->version     = ntohs(head->version);
-
-    head->type        = ntohl(head->type);
-    head->flags       = ntohl(head->flags);
-    head->payloadSize = ntohll(head->payloadSize);
-}
-
-static int validateHeader(const PacketHeader* header){
-
-    if( header->magic != PACKET_MAGIC_NUMBER )
-        return -1;
-        
-    if( header->payloadSize > MAX_PAYLOAD_SIZE )
-        return -2;
-
-    return 0;
-}
-
-//================================================
-
-
-//  ==========____SEND__/__RECIVE____==============
-
 int32_t send_packet(ms_socket_t* socket, PacketHeader* header, PacketPayload* payload){
 
     if (!socket || !header || !payload)
@@ -137,9 +90,6 @@ int32_t recv_packet(ms_socket_t* socket, PacketHeader* header, PacketPayload* pa
     return header->type; // Return message type
 }
 
-
-//  ===========____SEND_/_RECIVE -> BUFFER____===============
-
 int32_t recv_buffer(ms_socket_t* socket, void* payload, uint64_t payload_maxSize){
 
     PacketPayload pck = newPacketPayload((uint8_t*)payload, payload_maxSize);
@@ -162,50 +112,6 @@ int32_t send_buffer(ms_socket_t* socket, void* payload, uint64_t payload_size){
     return send_packet(socket, &head, &pck);
 }
 
-
-//  ===========______DEBUG______===============
-
-void printHeader(PacketHeader head){
-    
-    printf("[Header] { magic: 0x%x | version: %d | type: %d | flags: %d | payloadSize: %lld } \n", \
-    (int)head.magic, (int)head.version, (int)head.type, (int)head.flags, head.payloadSize);
-    
-}
-
-
-//  ===========______HEADER______===============
-
-PacketHeader newHeader(){
-    return newHeaderType(MSG_DEFAULT);
-}
-
-PacketHeader newHeaderType(uint32_t type){
-    PacketHeader header;
-
-    header.version = PACKETSIZE_VERSION;
-    header.magic = PACKET_MAGIC_NUMBER;
-    
-    header.type = type;
-    
-    header.flags = 0;
-    header.payloadSize = 0;
-
-    return header;
-}
-
-
-//  ===========______Payload______===============
-
-PacketPayload newPacketPayload(uint8_t* payload, uint64_t max){
-    PacketPayload ret;
-
-    ret.buffer = payload;
-    ret.maxSize = max;
-
-    return ret;
-}
-
-
 // ============================
 
 Packet pck_newPacket(size_t contBytes){
@@ -216,8 +122,10 @@ Packet pck_newPacket(size_t contBytes){
     if(contBytes > 0){
         buffer = (uint8_t*)malloc(contBytes);
 
-        if(buffer == NULL)
-            return (Packet){0}; // error on allocation    
+        if(buffer == NULL){
+            fillErrorPacket(&packet);
+            return packet; // error on allocation    
+        }
     }
     else{
         buffer = NULL;

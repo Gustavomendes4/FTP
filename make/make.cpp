@@ -6,9 +6,8 @@
 
 const char* arguments[] = {
     "a",
-    "ms",
+    "minisocket",
     "utils",
-    "packet",
 
     "server",
     "client",
@@ -17,13 +16,14 @@ const char* arguments[] = {
 };
 
 const char* compile_cmd[] = {
-    "cd ./bin && ar rcs lib.a minisocket.o packet.o utils.o packet.o",
-    "g++ ./libs/minisocket/minisocket.c -I./includes -I./libs/utils -c -o ./bin/minisocket.o",
-    "g++ ./libs/utils/utils.c -I./libs/utils -c -o ./bin/utils.o",
-    "g++ ./src/packet.c -I./libs/utils -I./libs/minisocket -I./includes -c -o ./bin/packet.o",
+    "cd ./bin && ar rcs lib.a minisocket.o utils.o",
+    "gcc ./libs/minisocket/minisocket.c -I./includes -I./libs/utils -c -o ./bin/minisocket.o",
+    "gcc ./libs/utils/utils.c -I./libs/utils -c -o ./bin/utils.o",
 
-    "g++ server.cpp ./src/gsfile.c -I./includes -I./libs/minisocket -I./libs/utils ./bin/lib.a -lws2_32 -o server"
-    "g++ client.cpp ./src/gsfile.c -I./includes -I./libs/minisocket -I./libs/utils ./bin/lib.a -lws2_32 -o client"
+    // "g++ ./src/packet.c -I./libs/minisocket -I./includes -c -o ./bin/packet.o",
+
+    "gcc server.cpp ./src/gsfile.c -I./includes -I./libs/minisocket -I./libs/utils ./bin/lib.a -lws2_32 -o server"
+    "gcc client.cpp ./src/gsfile.c -I./includes -I./libs/minisocket -I./libs/utils ./bin/lib.a -lws2_32 -o client"
 
     "\0"
 };

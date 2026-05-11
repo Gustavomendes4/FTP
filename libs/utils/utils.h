@@ -27,4 +27,11 @@ int isValidIp(const char* ip);
 
 int isValidPort(const char* port);
 
+//
+
+uint64_t htonll(uint64_t v);
+
+uint64_t ntohll(uint64_t v);
+
+
 #endif

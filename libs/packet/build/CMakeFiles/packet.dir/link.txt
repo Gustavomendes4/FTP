@@ -1,0 +1,2 @@
+C:\MinGW\bin\ar.exe qc libpacket.a CMakeFiles/packet.dir/src/header.c.obj CMakeFiles/packet.dir/src/packet.c.obj CMakeFiles/packet.dir/src/payload.c.obj
+C:\MinGW\bin\ranlib.exe libpacket.a

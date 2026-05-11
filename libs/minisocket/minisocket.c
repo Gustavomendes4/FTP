@@ -1,5 +1,12 @@
 
-#include <string.h>
+/*
+
+    Futuramente: usar size_t para arquivos maiores que 2GB, nas funções send_all e rcv_all;
+
+
+
+
+*/
 
 #include "minisocket.h"
 #include "utils.h"
@@ -21,11 +28,15 @@ void ms_cleanup() {
 }
 
 void ms_close(ms_socket_t sock){
+
+    if(sock == ms_invalid)
+        return;
+
 #ifdef _WIN32
-    shutdown(sock, SD_BOTH);
+    // shutdown(sock, SD_BOTH);
     closesocket(sock);
 #else
-    shutdown(sock, SHUT_RDWR);
+    // shutdown(sock, SHUT_RDWR);
     close(sock);
 #endif
 }
@@ -115,9 +126,12 @@ ms_socket_t ms_accept(ms_socket_t server, char* ip, int* port){
     if (ip) {
         #ifdef _WIN32
             // InetNtop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);
-            strcpy(ip, inet_ntoa(addr.sin_addr));
+            // strcpy(ip, inet_ntoa(addr.sin_addr));
+            strncpy(ip, inet_ntoa(addr.sin_addr), INET_ADDRSTRLEN); //no thread-safe
+            ip[INET_ADDRSTRLEN - 1] = '\0';
+
         #else
-            inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN);
+            inet_ntop(AF_INET, &addr.sin_addr, ip, INET_ADDRSTRLEN); // thread-safe?
         #endif
     }
 
@@ -130,19 +144,22 @@ ms_socket_t ms_accept(ms_socket_t server, char* ip, int* port){
 }
 
 // ================  Send / Recive  ================
-int ms_send(ms_socket_t sock, const char* buffer, int size) {
-    return send(sock, buffer, size, 0);
+int ms_send(ms_socket_t sock, const char* buffer, size_t size) {
+    return send(sock, buffer, (int)size, 0);
 }
 
-int ms_send_all(ms_socket_t sock, const void* buffer, int size) {
+long int ms_send_all(ms_socket_t sock, const void* buffer, size_t size) {
     
     size_t total = 0;
     const char* ptr = (const char*)buffer;
 
     while (total < size) {
-        int sent = ms_send(sock, ptr + total, (int)(size - total));
+        int sent = ms_send(sock, ptr + total, (size - total));
 
-        if (sent <= 0){
+        if(sent == 0)
+            return 0;
+
+        if (sent < 0){
 
             #ifndef _WIN32
             if (errno == EINTR) continue;
@@ -154,14 +171,14 @@ int ms_send_all(ms_socket_t sock, const void* buffer, int size) {
         total += (size_t)sent;
     }
 
-    return (int)total;
+    return (long int)total;
 }
 
-int ms_recv(ms_socket_t sock, char* buffer, int size) {
-    return recv(sock, buffer, size, 0);
+int ms_recv(ms_socket_t sock, char* buffer, size_t size) {
+    return recv(sock, buffer, (int)size, 0);
 }
 
-int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
+long int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
     
     size_t total = 0;
 
@@ -170,6 +187,9 @@ int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
     while(total < size) {
         int bytes_received = ms_recv(sock, ptr + total, size - total);
         
+
+        if(bytes_received == 0)
+            return 0;
 
         if (bytes_received < 0) {
         #ifndef _WIN32
@@ -181,7 +201,7 @@ int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
         total += (size_t)bytes_received;
     }
     
-    return (int)total;
+    return (long int)total;
 
 }
 
@@ -194,27 +214,6 @@ int ms_last_error() {
     return errno;
 #endif
 }
-
-
-// ===================================
-int ms_isValidPath( const char* path) {
-    if (!path || !*path) return 0;
-
-    #ifdef _WIN32
-    
-    const char* invalid = "<>:\"|?*";
-    
-    while (*path) {
-        if (strchr(invalid, *path)) return 0;
-        path++;
-    }
-    
-    #endif
-
-    return 1;
-}
-
-// =======================================
 
 int ms_isValidIp(const char* ip) {
     struct sockaddr_in sa;
