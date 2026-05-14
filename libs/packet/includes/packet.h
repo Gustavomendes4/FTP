@@ -7,8 +7,8 @@
 
 #include "minisocket.h"
 
-#include "includes/header.h"
-#include "includes/payload.h"
+#include "./includes/header.h"
+#include "./includes/payload.h"
 
 
 typedef struct{

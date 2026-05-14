@@ -23,7 +23,7 @@
     #include <sys/socket.h>
     #include <arpa/inet.h>
     #include <unistd.h>
-    #include <cerrno>
+    #include <errno.h>
 
     typedef int ms_socket_t;
     #define ms_invalid -1

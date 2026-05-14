@@ -20,7 +20,7 @@
 
 #include "header.h"
 #include "payload.h"
-#include "../packet.h"
+#include "packet.h"
 
 #include "minisocket.h"
 

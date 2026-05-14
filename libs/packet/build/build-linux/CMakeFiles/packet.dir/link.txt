@@ -1,0 +1,2 @@
+/usr/bin/ar qc libpacket.a CMakeFiles/packet.dir/src/header.c.o CMakeFiles/packet.dir/src/packet.c.o CMakeFiles/packet.dir/src/payload.c.o /mnt/c/Users/Gustavo/Desktop/FTP/libs/minisocket/minisocket.o
+/usr/bin/ranlib libpacket.a

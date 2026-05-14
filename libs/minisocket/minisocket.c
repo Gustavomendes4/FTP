@@ -9,7 +9,6 @@
 */
 
 #include "minisocket.h"
-#include "utils.h"
 
 // ================  Init / Cleanup  ================
 int ms_init() {

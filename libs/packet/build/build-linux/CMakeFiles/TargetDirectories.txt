@@ -1,0 +1,3 @@
+/mnt/c/Users/Gustavo/Desktop/FTP/libs/packet/build/build-linux/CMakeFiles/packet.dir
+/mnt/c/Users/Gustavo/Desktop/FTP/libs/packet/build/build-linux/CMakeFiles/edit_cache.dir
+/mnt/c/Users/Gustavo/Desktop/FTP/libs/packet/build/build-linux/CMakeFiles/rebuild_cache.dir

@@ -18,7 +18,6 @@
 #include <stdint.h>
 #include <string.h>
 
-// #include "includes/header.h"
 #include "header.h"
 
 // C:\Users\Gustavo\Desktop\FTP\libs\packet>g++ ./src/header.c -c -I./includes -I../minisocket
@@ -127,8 +126,23 @@ int validatePacketHeader(const PacketHeader* header){
 
 void printHeader(PacketHeader head){
     
-    printf("[Header] { magic: 0x%x | version: %d | type: %d | flags: %d | payloadSize: %lld } \n", \
-    (int)head.magic, (int)head.version, (int)head.type, (int)head.flags, (long long int)head.payloadSize);
+    // printf(
+    //     "[Header] { magic: 0x%x | version: %d | type: %d | flags: %d | payloadSize: %" PRId64 "} \n",
+    //     (int)head.magic,
+    //     (int)head.version,
+    //     (int)head.type,
+    //     (int)head.flags,
+    //     head.payloadSize
+    // );
+
+    printf(
+        "[Header] { magic: 0x%x | version: %d | type: %d | flags: %d | payloadSize: %lld} \n",
+        (int)head.magic,
+        (int)head.version,
+        (int)head.type,
+        (int)head.flags,
+        (long long int)head.payloadSize
+    );
     
 }
 

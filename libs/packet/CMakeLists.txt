@@ -10,6 +10,8 @@ add_library(packet STATIC
     src/header.c
     src/packet.c
     src/payload.c
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/minisocket/minisocket.o
 )
 
 # Diretórios de include da lib
@@ -17,10 +19,14 @@ target_include_directories(packet
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/includes
+
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/minisocket/
 )
 
 target_compile_options(packet PRIVATE
     -Wall
     -Wextra
+    -Wpedantic
+
     -Wpedantic
 )
