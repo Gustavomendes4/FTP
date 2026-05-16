@@ -40,7 +40,7 @@ int toNumber(const char* arg){
     }
 
     // converte dígitos
-    for(i ; arg[i] != '\0'; i++){
+    for(; arg[i] != '\0'; i++){
         result = result * 10 + (arg[i] - '0');
     }
 
@@ -64,7 +64,7 @@ int isNumber(const char* vec){
     }
 
 
-    for(i; vec[i] != '\0'; i++){
+    for(; vec[i] != '\0'; i++){
         
         if( !isDigit(vec[i]) ){
 
@@ -175,16 +175,16 @@ int isValidPort(const char* port) {
     return (portNum > 0 && portNum <= 65535);
 }
 
-uint64_t htonll(uint64_t v){
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-    return ((uint64_t)htonl((uint32_t)(v >> 32))) |
-           ((uint64_t)htonl((uint32_t)(v & 0xFFFFFFFF)) << 32);
-#else
-    return v;
-#endif
-}
+// uint64_t htonll(uint64_t v){
+// #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+//     return ((uint64_t)htonl((uint32_t)(v >> 32))) |
+//            ((uint64_t)htonl((uint32_t)(v & 0xFFFFFFFF)) << 32);
+// #else
+//     return v;
+// #endif
+// }
 
-uint64_t ntohll(uint64_t v){
-    return htonll(v);
-}
+// uint64_t ntohll(uint64_t v){
+//     return htonll(v);
+// }
 

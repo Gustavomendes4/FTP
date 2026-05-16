@@ -34,8 +34,8 @@
 int main(int argc, char* argv[]){
     
     /// ========= Validação de argumentos     ========= ///
-    if(argc < 2 || !isNumber(argv[1])){
-        fprintf(stderr, "Invalid input. Use: <-.exe> <port>");
+    if(argc < 3 || !isNumber(argv[1])){
+        fprintf(stderr, "Invalid input. Use: <-.exe> <port> <dir>");
         return -1;
     }
 

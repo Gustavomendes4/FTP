@@ -23,23 +23,41 @@ typedef enum{
     MSG_EMPTY = 0,
     MSG_DEFAULT,
 
-    //Request
-    MSG_GET_FILE,
-    MSG_PUT_FILE,
-    MSG_DELETE_FILE,
-    MSG_UPDATE_FILE,
-    MSG_LIST_FILES,
+    //Request:
+        // file
+        MSG_GET_FILE,
+        MSG_PUT_FILE,
+        // MSG_APPEND_FILE,
+        MSG_DELETE_FILE,
+        // MSG_RENAME_FILE,
+        MSG_MOVE_FILE,
+        // MSG_COPY_FILE,
+        // MSG_FILE_INFO,
+        MSG_LIST_FILES,
 
-    //Response
+    // folder
+        MSG_CREATE_FOLDER,
+        MSG_DELETE_FOLDER,
+        MSG_LIST_FOLDERS,
+        MSG_MOVE_FOLDER,
+
+    //Responses:
     MSG_FILE_FOUND, // ok, vou mandar
-    MSG_FILE_CONTENT,
+    MSG_FILE_CHUNCK,
     MSG_FILE_LIST,
+    
+        // errors
+        MSG_ERROR_FILE_NOT_FOUND,
+        MSG_ERROR_PERMISSION_DENIED,
+    
+    //Others
+    MSG_PING_PONG,
     MSG_ACK,
-
+    MSG_OK,
     MSG_ERROR,
-    MSG_ERROR_FILE_NOT_FOUND,
-    MSG_ERROR_PERMISSION_DENIED,
-    MSG_ERROR_INVALID_REQUEST
+    MSG_AUTH,
+    MSG_BAD_REQUEST,
+
 
 }MessageType;
 

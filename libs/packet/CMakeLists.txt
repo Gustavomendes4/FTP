@@ -12,6 +12,8 @@ add_library(packet STATIC
     src/payload.c
 
     ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/minisocket/minisocket.o
+
+    src/helpper.c
 )
 
 # Diretórios de include da lib

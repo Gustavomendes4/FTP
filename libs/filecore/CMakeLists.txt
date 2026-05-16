@@ -1,26 +1,22 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(minisocket LANGUAGES C)
+project(filecore LANGUAGES C)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # Cria biblioteca estática
-add_library(minisocket STATIC
-    minisocket.c
+add_library(filecore STATIC
+    filecore.c
 )
 
 # Diretório dos headers
-target_include_directories(minisocket PUBLIC
+target_include_directories(filecore PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(minisocket PUBLIC
-    ws2_32
-)
-
 # Flags de compilação
-target_compile_options(minisocket PRIVATE
+target_compile_options(filecore PRIVATE
     -Wall
     -Wextra
     -Wpedantic

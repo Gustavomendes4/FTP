@@ -192,6 +192,7 @@ int16_t recvPacket(ms_socket_t sock, Packet* pack){
     if(verify < 0)
         return -2;
 
+
     if( validatePacketHeader(&tempHead) != 0)
         return -3;
 
