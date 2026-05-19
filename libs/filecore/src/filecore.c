@@ -1,9 +1,11 @@
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "filecore.h"
 
-long int fileSize(FILE* file){
+long int fc_fileSize(FILE* file){
 
     if(file == NULL) return 0;
     
@@ -26,16 +28,15 @@ long int fileSize(FILE* file){
     return end;
 }
 
-int isValidDirectory(const char* path){
-    return 1;
+void fc_open(FILE** file, const char* path, const char* mode){
+    
+    *file = fopen(path, mode);
 }
 
-int existsFile(const char* path){
-    return 1;
+void fc_close(FILE* file){
+    fclose(file);
 }
 
-int existsDirectory(const char* path){
+int fc_delete(const char* path){
     return 1;
 }
-
-

@@ -7,8 +7,8 @@
 
 #include "minisocket.h"
 
-#include "./includes/header.h"
-#include "./includes/payload.h"
+#include "packetlib/header.h"
+#include "packetlib/payload.h"
 
 
 typedef struct{
@@ -50,5 +50,7 @@ uint64_t packetTell(const Packet* pack);
 int16_t packetSeek(Packet *pack, long offset, int whence);
 
 uint64_t packetRemaining(const Packet* pack);
+
+void setPacketType(Packet* pack, uint32_t type);
 
 #endif //PACKET_H_INCLUDED

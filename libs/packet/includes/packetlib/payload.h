@@ -9,7 +9,7 @@
 
 
 
-#define MAX_PACKET_PAYLOAD_SIZE 4096
+#define MAX_PACKET_PAYLOAD_SIZE 20200
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -17,10 +17,10 @@
 #include "minisocket.h"
 
 typedef struct{
-    uint64_t maxSize;
-    uint8_t* buffer;
 
-    // uint64_t size;
+    uint64_t maxSize;
+    
+    uint8_t* buffer;
 
 } PacketPayload;
 

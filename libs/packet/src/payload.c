@@ -17,7 +17,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "payload.h"
+#include "packetlib/payload.h"
 
 // C:\Users\Gustavo\Desktop\FTP\libs\packet>g++ ./src/payload.c -c -I./includes -I../minisocket
 

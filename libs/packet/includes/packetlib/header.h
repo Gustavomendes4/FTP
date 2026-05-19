@@ -43,15 +43,17 @@ typedef enum{
 
     //Responses:
     MSG_FILE_FOUND, // ok, vou mandar
-    MSG_FILE_CHUNCK,
+    MSG_FILE_CHUNK,
     MSG_FILE_LIST,
     
         // errors
         MSG_ERROR_FILE_NOT_FOUND,
+        MSG_ERROR_CANNOT_OPEN_FILE,
         MSG_ERROR_PERMISSION_DENIED,
     
     //Others
     MSG_PING_PONG,
+    MSG_EOF,
     MSG_ACK,
     MSG_OK,
     MSG_ERROR,

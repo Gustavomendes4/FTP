@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "header.h"
+#include "packetlib/header.h"
 
 // C:\Users\Gustavo\Desktop\FTP\libs\packet>g++ ./src/header.c -c -I./includes -I../minisocket
 

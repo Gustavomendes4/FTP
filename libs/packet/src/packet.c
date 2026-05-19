@@ -18,8 +18,8 @@
 #include <string.h>
 #include <stdint.h>
 
-#include "header.h"
-#include "payload.h"
+#include "packetlib/header.h"
+#include "packetlib/payload.h"
 #include "packet.h"
 
 #include "minisocket.h"
@@ -264,14 +264,17 @@ uint64_t packetWrite(Packet* pack, const void* data, size_t count){
 
     int16_t valid = isValidPacket(pack);
 
-    if( valid != 0)
+    if( valid != 0){
         return 0;
+    }
 
-    if( data == NULL )
+    if( data == NULL ){
         return 0;
+    }
 
-    if( count > pack->payload.maxSize - pack->cursor )
+    if( count > pack->payload.maxSize - pack->cursor ){
         return 0; // Buffer size exceeded
+    }
 
 
     memcpy( pack->payload.buffer + pack->cursor, data, count );
@@ -344,5 +347,12 @@ uint64_t packetRemaining(const Packet* pack){
         return 0;
     
     return pack->header.payloadSize - pack->cursor;
+}
+
+void setPacketType(Packet* pack, uint32_t type){
+
+    if(pack == NULL) return;
+
+    pack->header.type = type;
 }
 

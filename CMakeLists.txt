@@ -15,12 +15,17 @@ add_subdirectory(libs/utils)
 add_executable(client
     src/client.c
 
+    src/transfer.c
+
 )
 
 # Executável server
 add_executable(server
     src/server.c
+    
     src/serverHandlers.c
+
+    src/transfer.c
 
 )
 

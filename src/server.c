@@ -35,17 +35,15 @@
 
 #include "minisocket.h"
 #include "packet.h"
+#include "packetlib/helpper.h"
 #include "filecore.h"
-
-#include "helpper.h"
 #include "utils.h"
 
 #include "serverHandlers.h"
 
 
 #define NUMBER_OF_TASKS 5
-
-char* baseFolder;
+#define MAX_COMMAND_LENGTH 4000
 
 int validateArguments(int argc, char* argv[]){
     
@@ -59,10 +57,10 @@ int validateArguments(int argc, char* argv[]){
         return -2;
     }
 
-    if(  !isValidDirectory(argv[2]) ){
-        fprintf(stderr, "Invalid directory path: '%s'\n", argv[2]);
-        return -4;
-    }
+    // if(  !isValidDirectory(argv[2]) ){
+    //     fprintf(stderr, "Invalid directory path: '%s'\n", argv[2]);
+    //     return -4;
+    // }
 
     if(  !existsDirectory(argv[2]) ){
         fprintf(stderr, "Directory not found: '%s'\n", argv[2]);
@@ -94,7 +92,7 @@ int initServer(ms_socket_t* sock, int port){
     return 0;
 }
 
-void proceedClientRequest(ms_socket_t sock, Packet* packet){
+void proceedClientRequest(ms_socket_t sock, Packet* packet, const char* baseFolder){
 
     uint16_t ret = recvPacket(sock, packet);
 
@@ -103,30 +101,37 @@ void proceedClientRequest(ms_socket_t sock, Packet* packet){
         return;
     }
 
+    // The handles can read PACKET and need to fill it to be sent
+
     switch(packet->header.type){
 
-        case MSG_GET_FILE:      handleGetFileRequest(sock, packet);     break;
-        case MSG_PUT_FILE:      handlePutFileRequest(sock, packet);     break;
-        case MSG_DELETE_FILE:   handleDeleteFileRequest(sock, packet);  break;
-        case MSG_MOVE_FILE:     handleMoveFileRequest(sock, packet);    break;
-        case MSG_LIST_FILES:    handleListFileRequest(sock, packet);    break;
+        case MSG_GET_FILE:      handleGetFileRequest(sock, packet, baseFolder);     break;
+        case MSG_PUT_FILE:      handlePutFileRequest(sock, packet, baseFolder);     break;
 
-        case MSG_CREATE_FOLDER: handleCreateFolderRequest(sock, packet); break;
-        case MSG_DELETE_FOLDER: handleDeleteFolderRequest(sock, packet); break;
-        case MSG_LIST_FOLDERS:  handleListFolderRequest(sock, packet);  break;
-        case MSG_MOVE_FOLDER:   handleMoveFolderRequest(sock, packet);  break;
+        case MSG_DELETE_FILE:   handleDeleteFileRequest(sock, packet, baseFolder);  break;
+        case MSG_MOVE_FILE:     handleMoveFileRequest(sock, packet, baseFolder);    break;
+        case MSG_LIST_FILES:    handleListFileRequest(sock, packet, baseFolder);    break;
+
+        case MSG_CREATE_FOLDER: handleCreateFolderRequest(sock, packet, baseFolder); break;
+        case MSG_DELETE_FOLDER: handleDeleteFolderRequest(sock, packet, baseFolder); break;
+        case MSG_LIST_FOLDERS:  handleListFolderRequest(sock, packet, baseFolder);  break;
+        case MSG_MOVE_FOLDER:   handleMoveFolderRequest(sock, packet, baseFolder);  break;
         
-        case MSG_PING_PONG:     handlePingPongRequest(sock, packet);    break;
+        case MSG_PING_PONG:     handlePingPongRequest(sock, packet); break;
         default:                handlerDefaultRequest(sock, packet); break;
 
     }
+
+    if( sendPacket(sock, packet) != 0){
+        fprintf(stderr, "Error to send END packet to client.\n");
+    }
 }
 
-int server(ms_socket_t socket){
+int server(ms_socket_t socket, const char* baseFolder){
 
     ms_socket_t clientSock;
 
-    Packet packet = newPacket(2100);
+    Packet packet = newPacket(5000);
 
     int clientPort;
     char clientIP[16];
@@ -143,7 +148,7 @@ int server(ms_socket_t socket){
         
         printf("Client connected(%s:%d)\n\n", clientIP, clientPort);
 
-        proceedClientRequest(clientSock, &packet);
+        proceedClientRequest(clientSock, &packet, baseFolder);
     }
 
 
@@ -159,17 +164,26 @@ int main(int argc, char* argv[]){
 
     ms_socket_t sock;
     const int   port   = toNumber(argv[1]);
+    char fullBaseFolder[MAX_PATH_LENGTH];
 
-    baseFolder = argv[2];
-
-    if( initServer(&sock, port) != 0){
-        fprintf(stderr, "Error to create server on socket[%d].\n", ms_last_error());
+    if( getFullPath(fullBaseFolder, argv[2]) == 0){
+        fprintf(stderr, "Error to get full path of base folder.\n");
         return -2;
     }
 
-    printf("\nSocket initialized in %d\n", port);
+    if( initServer(&sock, port) != 0){
+        fprintf(stderr, "Error to create server on socket[%d].\n", ms_last_error());
+        return -3;
+    }
+
+    printf("\nServer initialized in: \nPath:\t%s \nPort:\t%d\n\n", fullBaseFolder, port);
 
     // Verificar se a pasta base existe, caso contrário, criar e avisar
 
-    return server(sock);
+    int result = server(sock, fullBaseFolder);
+    
+    ms_close(sock);
+    ms_cleanup();
+    
+    return result;
 }

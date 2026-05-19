@@ -10,27 +10,27 @@
 #include "packet.h"
 #include "filecore.h"
 
-#include "helpper.h"
+#include "packetlib/helpper.h"
 #include "utils.h"
 
 
-void handleGetFileRequest(ms_socket_t, Packet*);
+void handleGetFileRequest(ms_socket_t, Packet*, const char*);
 
-void handlePutFileRequest(ms_socket_t, Packet*);
+void handlePutFileRequest(ms_socket_t, Packet*, const char*);
 
-void handleDeleteFileRequest(ms_socket_t, Packet*);
+void handleDeleteFileRequest(ms_socket_t, Packet*, const char*);
 
-void handleMoveFileRequest(ms_socket_t, Packet*);
+void handleMoveFileRequest(ms_socket_t, Packet*, const char*);
 
-void handleListFileRequest(ms_socket_t, Packet*);
+void handleListFileRequest(ms_socket_t, Packet*, const char*);
 
-void handleCreateFolderRequest(ms_socket_t, Packet*);
+void handleCreateFolderRequest(ms_socket_t, Packet*, const char*);
 
-void handleDeleteFolderRequest(ms_socket_t, Packet*);
+void handleDeleteFolderRequest(ms_socket_t, Packet*, const char*);
 
-void handleListFolderRequest(ms_socket_t, Packet*);
+void handleListFolderRequest(ms_socket_t, Packet*, const char*);
 
-void handleMoveFolderRequest(ms_socket_t, Packet*);
+void handleMoveFolderRequest(ms_socket_t, Packet*, const char*);
 
 void handlePingPongRequest(ms_socket_t, Packet*);
 

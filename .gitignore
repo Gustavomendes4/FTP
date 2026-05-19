@@ -1,2 +1,6 @@
 *.exe 
 /build/
+/libs/minisocket/build/
+/libs/filecore/build/
+/libs/packet/build/
+/libs/utils/build/

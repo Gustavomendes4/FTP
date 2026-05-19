@@ -47,7 +47,7 @@ build cmake_object_order_depends_target_packet: phony || .
 build CMakeFiles/packet.dir/src/header.c.obj: C_COMPILER__packet_unscanned_ C$:/Users/Gustavo/Desktop/FTP/libs/packet/src/header.c || cmake_object_order_depends_target_packet
   DEP_FILE = CMakeFiles\packet.dir\src\header.c.obj.d
   FLAGS = -std=gnu11 -Wall -Wextra -Wpedantic
-  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
+  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
   OBJECT_DIR = CMakeFiles\packet.dir
   OBJECT_FILE_DIR = CMakeFiles\packet.dir\src
   TARGET_SUPPORT_DIR = CMakeFiles\packet.dir
@@ -55,7 +55,7 @@ build CMakeFiles/packet.dir/src/header.c.obj: C_COMPILER__packet_unscanned_ C$:/
 build CMakeFiles/packet.dir/src/packet.c.obj: C_COMPILER__packet_unscanned_ C$:/Users/Gustavo/Desktop/FTP/libs/packet/src/packet.c || cmake_object_order_depends_target_packet
   DEP_FILE = CMakeFiles\packet.dir\src\packet.c.obj.d
   FLAGS = -std=gnu11 -Wall -Wextra -Wpedantic
-  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
+  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
   OBJECT_DIR = CMakeFiles\packet.dir
   OBJECT_FILE_DIR = CMakeFiles\packet.dir\src
   TARGET_SUPPORT_DIR = CMakeFiles\packet.dir
@@ -63,7 +63,7 @@ build CMakeFiles/packet.dir/src/packet.c.obj: C_COMPILER__packet_unscanned_ C$:/
 build CMakeFiles/packet.dir/src/payload.c.obj: C_COMPILER__packet_unscanned_ C$:/Users/Gustavo/Desktop/FTP/libs/packet/src/payload.c || cmake_object_order_depends_target_packet
   DEP_FILE = CMakeFiles\packet.dir\src\payload.c.obj.d
   FLAGS = -std=gnu11 -Wall -Wextra -Wpedantic
-  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
+  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
   OBJECT_DIR = CMakeFiles\packet.dir
   OBJECT_FILE_DIR = CMakeFiles\packet.dir\src
   TARGET_SUPPORT_DIR = CMakeFiles\packet.dir
@@ -71,7 +71,7 @@ build CMakeFiles/packet.dir/src/payload.c.obj: C_COMPILER__packet_unscanned_ C$:
 build CMakeFiles/packet.dir/src/helpper.c.obj: C_COMPILER__packet_unscanned_ C$:/Users/Gustavo/Desktop/FTP/libs/packet/src/helpper.c || cmake_object_order_depends_target_packet
   DEP_FILE = CMakeFiles\packet.dir\src\helpper.c.obj.d
   FLAGS = -std=gnu11 -Wall -Wextra -Wpedantic
-  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
+  INCLUDES = -IC:/Users/Gustavo/Desktop/FTP/libs/packet/includes -IC:/Users/Gustavo/Desktop/FTP/libs/packet/../../libs/minisocket
   OBJECT_DIR = CMakeFiles\packet.dir
   OBJECT_FILE_DIR = CMakeFiles\packet.dir\src
   TARGET_SUPPORT_DIR = CMakeFiles\packet.dir

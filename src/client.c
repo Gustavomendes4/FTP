@@ -37,8 +37,9 @@
 
 #include "minisocket.h"
 #include "packet.h"
-#include "helpper.h"
+#include "packetlib/helpper.h"
 
+#include "transfer.h"
 #include "filecore.h"
 #include "utils.h"
 
@@ -90,21 +91,23 @@ int client(ms_socket_t socket){
 
     Packet request = newPacket(250);
 
-    // const char* path = "Ola servidor, quero o arquivo 'teste.txt'.";
-    // packetWrite(&request, path, strlen(path));
-
-    if( sendTypedHeader(socket, MSG_ERROR_PERMISSION_DENIED) != 0){
+    if( sendPacketString(socket, MSG_GET_FILE, "/./ola.txt") != 0){
         fprintf(stderr, "Error to send packet to server.\n");
         return -1;
     }
 
-    if(recvPacket(socket, &request) != 0){
-        fprintf(stderr, "Error to receive packet from server.\n");
-        return -2;
+    // size_t fileSize, numChunks;
+
+    // int16_t result = recvFileInfos(socket, &request, &fileSize, &numChunks);
+
+    int result = recvFile(socket, &request, "../../../recebido.txt");
+
+
+    if(  result != 0 ){
+        fprintf(stderr, "error in recv file [%d]", (int)result);
+        return -3;
     }
-
-    printf("Received packet from server: [%d]%s\n", (int)request.header.type, (char*)request.payload.buffer);
-
+    
     return 0;
 }
 

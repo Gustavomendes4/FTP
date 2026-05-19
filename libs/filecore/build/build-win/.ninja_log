@@ -1,3 +1,16 @@
 # ninja log v7
-54	272	8005918642830887	CMakeFiles/filecore.dir/filecore.c.obj	36f96b02023f59f0
-275	485	8005918645058181	libfilecore.a	b79cfc4a2546b1c5
+22	673	8007633650126498	CMakeFiles/filecore.dir/filecore.c.obj	36f96b02023f59f0
+707	845	8007647655791599	libfilecore.a	2c0aeb32e49c07e7
+38	303	8007650880448005	build.ninja	e4ff0922fc7218b0
+38	303	8007650880407822	C:/Users/Gustavo/Desktop/FTP/libs/filecore/build/build-win/cmake_install.cmake	e4ff0922fc7218b0
+26	117	8007633650167263	CMakeFiles/filecore.dir/fileutils.c.obj	f00a5b48459a4445
+25	683	8007647648990948	CMakeFiles/filecore.dir/src/fileutils.c.obj	58ba9a3dd7ff2863
+21	707	8007647648945835	CMakeFiles/filecore.dir/src/filecore.c.obj	88f68d36037e8648
+29	226	8007650880448005	build.ninja	e4ff0922fc7218b0
+29	226	8007650880448005	C:/Users/Gustavo/Desktop/FTP/libs/filecore/build/build-win/cmake_install.cmake	e4ff0922fc7218b0
+26	800	8007650881296988	CMakeFiles/filecore.dir/src/fileutils.c.obj	58ba9a3dd7ff2863
+22	803	8007650881250819	CMakeFiles/filecore.dir/src/filecore.c.obj	88f68d36037e8648
+804	930	8007650889065090	libfilecore.a	2c0aeb32e49c07e7
+47	759	8007654905403841	CMakeFiles/filecore.dir/src/filecore.c.obj	88f68d36037e8648
+54	764	8007654905475054	CMakeFiles/filecore.dir/src/fileutils.c.obj	58ba9a3dd7ff2863
+764	874	8007654912572777	libfilecore.a	2c0aeb32e49c07e7

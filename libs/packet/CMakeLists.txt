@@ -19,7 +19,6 @@ add_library(packet STATIC
 # Diretórios de include da lib
 target_include_directories(packet
     PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/includes
 
         ${CMAKE_CURRENT_SOURCE_DIR}/../../libs/minisocket/
