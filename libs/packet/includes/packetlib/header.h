@@ -33,7 +33,8 @@ typedef enum{
         MSG_MOVE_FILE,
         // MSG_COPY_FILE,
         // MSG_FILE_INFO,
-        MSG_LIST_FILES,
+        // MSG_LIST_FILES,
+        MSG_LIST,
 
     // folder
         MSG_CREATE_FOLDER,
@@ -50,6 +51,10 @@ typedef enum{
         MSG_ERROR_FILE_NOT_FOUND,
         MSG_ERROR_CANNOT_OPEN_FILE,
         MSG_ERROR_PERMISSION_DENIED,
+        MSG_ERROR_FILE_ALREADY_EXISTS,
+        MSG_ERROR_FOLDER_ALREADY_EXISTS,
+
+        MSG_ERROR_FOLDER_NOT_EXISTS,
     
     //Others
     MSG_PING_PONG,

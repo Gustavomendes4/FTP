@@ -30,13 +30,25 @@
 
 #endif
 
+// ================  Data types  ================
+typedef enum{ MS_TCP, MS_UDP } ms_protocol_t;
+
+typedef struct ms_addr_t{
+
+    char ip[INET_ADDRSTRLEN];
+
+    int port;
+
+    struct sockaddr_in addr;
+
+}ms_addr_t;
 
 // ================  Init / Cleanup  ================
 int ms_init();
 void ms_cleanup();
 
 // ================  Socket  ================
-ms_socket_t ms_socket_create();
+ms_socket_t ms_socket_create(ms_protocol_t protocol);
 void ms_close(ms_socket_t sock);
 
 // ================  Client  ================
@@ -62,5 +74,13 @@ int ms_last_error();
 
 int ms_isValidIp(const char* ip);
 
+
+// ================  UDP only  ================
+
+int ms_new_addr(ms_addr_t* addr, const char* ip, uint16_t port);
+
+int ms_sendto(ms_socket_t socket, const void* buffer, size_t size, const ms_addr_t* addr);
+
+int ms_recvfrom(ms_socket_t socket, void* buffer, size_t size, ms_addr_t* addr);
 
 #endif // MINISOCKET_H_INCLUDED

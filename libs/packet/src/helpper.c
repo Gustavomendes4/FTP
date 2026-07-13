@@ -68,6 +68,7 @@ uint64_t packetReadStr(Packet* packet, uint8_t* buffer, size_t maxSize){
     return readed;
 }
 
+
 //
 uint64_t packetWriteString(Packet* packet, uint32_t type, const char* str){
 
@@ -76,7 +77,7 @@ uint64_t packetWriteString(Packet* packet, uint32_t type, const char* str){
     // clearPacket(packet);
     setPacketType(packet, type);
 
-    return  packetWrite(packet, str, strlen(str));
+    return  packetWrite(packet, str, strlen(str) + 1);
 }
 
 uint32_t getPacketType(Packet* packet){

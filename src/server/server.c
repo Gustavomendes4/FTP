@@ -43,7 +43,6 @@
 
 
 #define NUMBER_OF_TASKS 5
-#define MAX_COMMAND_LENGTH 4000
 
 int validateArguments(int argc, char* argv[]){
     
@@ -77,7 +76,7 @@ int initServer(ms_socket_t* sock, int port){
         return -1;
     }
 
-    *sock = ms_socket_create();
+    *sock = ms_socket_create(MS_TCP);
     
     if(*sock == ms_invalid){
         fprintf(stderr, "Error to create socket.");
@@ -101,8 +100,6 @@ void proceedClientRequest(ms_socket_t sock, Packet* packet, const char* baseFold
         return;
     }
 
-    // The handles can read PACKET and need to fill it to be sent
-
     switch(packet->header.type){
 
         case MSG_GET_FILE:      handleGetFileRequest(sock, packet, baseFolder);     break;
@@ -110,20 +107,17 @@ void proceedClientRequest(ms_socket_t sock, Packet* packet, const char* baseFold
 
         case MSG_DELETE_FILE:   handleDeleteFileRequest(sock, packet, baseFolder);  break;
         case MSG_MOVE_FILE:     handleMoveFileRequest(sock, packet, baseFolder);    break;
-        case MSG_LIST_FILES:    handleListFileRequest(sock, packet, baseFolder);    break;
+
+        case MSG_LIST:          handleListRequest(sock, packet, baseFolder);    break;
 
         case MSG_CREATE_FOLDER: handleCreateFolderRequest(sock, packet, baseFolder); break;
         case MSG_DELETE_FOLDER: handleDeleteFolderRequest(sock, packet, baseFolder); break;
-        case MSG_LIST_FOLDERS:  handleListFolderRequest(sock, packet, baseFolder);  break;
+        // case MSG_LIST_FOLDERS:  handleListFolderRequest(sock, packet, baseFolder);  break;
         case MSG_MOVE_FOLDER:   handleMoveFolderRequest(sock, packet, baseFolder);  break;
         
-        case MSG_PING_PONG:     handlePingPongRequest(sock, packet); break;
-        default:                handlerDefaultRequest(sock, packet); break;
+        case MSG_PING_PONG:     handlePingPongRequest(sock); break;
+        default:                handlerDefaultRequest(sock); break;
 
-    }
-
-    if( sendPacket(sock, packet) != 0){
-        fprintf(stderr, "Error to send END packet to client.\n");
     }
 }
 
@@ -176,9 +170,9 @@ int main(int argc, char* argv[]){
         return -3;
     }
 
-    printf("\nServer initialized in: \nPath:\t%s \nPort:\t%d\n\n", fullBaseFolder, port);
+    // Verificar se a pasta base existe [ Ja feito em validateArgument], caso contrário, criar e avisar
 
-    // Verificar se a pasta base existe, caso contrário, criar e avisar
+    printf("\nServer initialized in: \nPath:\t%s \nPort:\t%d\n\n", fullBaseFolder, port);
 
     int result = server(sock, fullBaseFolder);
     
@@ -187,3 +181,4 @@ int main(int argc, char* argv[]){
     
     return result;
 }
+

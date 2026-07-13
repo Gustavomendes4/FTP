@@ -22,7 +22,7 @@ void handleDeleteFileRequest(ms_socket_t, Packet*, const char*);
 
 void handleMoveFileRequest(ms_socket_t, Packet*, const char*);
 
-void handleListFileRequest(ms_socket_t, Packet*, const char*);
+void handleListRequest(ms_socket_t sock, Packet* packet, const char* baseFolder);
 
 void handleCreateFolderRequest(ms_socket_t, Packet*, const char*);
 
@@ -32,8 +32,8 @@ void handleListFolderRequest(ms_socket_t, Packet*, const char*);
 
 void handleMoveFolderRequest(ms_socket_t, Packet*, const char*);
 
-void handlePingPongRequest(ms_socket_t, Packet*);
+void handlePingPongRequest(ms_socket_t);
 
-void handlerDefaultRequest(ms_socket_t, Packet*);
+void handlerDefaultRequest(ms_socket_t);
 
 #endif //SERVER_HANDLERS_H_INCLUDED

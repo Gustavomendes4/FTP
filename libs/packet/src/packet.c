@@ -169,7 +169,7 @@ int16_t sendPacket(ms_socket_t sock, Packet* pack){
 
         // == Send payload ==
         verify = sendPacketPayload(sock, &(pack->payload), (pack->header.payloadSize) );
-        
+
         // == Validate payload sent ==
         if(verify < 0) return -3;
     }

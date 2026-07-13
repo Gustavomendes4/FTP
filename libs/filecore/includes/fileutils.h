@@ -23,8 +23,8 @@ int existsFile(const char* path);
 
 int existsDirectory(const char* path);
 
-int existsFile(const char* path);
-
 int buildPath(char* dst, size_t dstSize, const char* baseFolder, const char* relativePath);
+
+const char* fc_getName(const char* path);
 
 #endif

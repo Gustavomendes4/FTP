@@ -40,7 +40,6 @@ static int recvFail(FILE* file, const char* path, int code){
     return code;
 }
 
-
 static size_t writeChunk(uint8_t* chunk, size_t count, FILE* file){
 
     if(chunk == NULL) return 0;
@@ -48,6 +47,7 @@ static size_t writeChunk(uint8_t* chunk, size_t count, FILE* file){
     return fwrite(chunk, sizeof(chunk[0]), count, file); 
 }
 
+//  =========   Public functions    =========
 
 int16_t sendFileInfos(ms_socket_t sock, Packet* packet, FILE* file){
 
@@ -75,7 +75,7 @@ int16_t recvFileInfos(ms_socket_t sock, Packet* packet, size_t* filesize, size_t
         return result;
 
     if( getPacketType(packet) != MSG_FILE_FOUND){
-        printf(": msg num (%d)", (int)getPacketType(packet));
+        // printf(": msg num (%d)", (int)getPacketType(packet));
         return -20;
     }
 
@@ -120,10 +120,10 @@ int sendFile(ms_socket_t sock, Packet* packet, const char* filePath){
         setPacketType(packet, MSG_FILE_CHUNK);
         
         if(packetWrite(packet, chunk, readed) != readed){
-            fprintf(stderr, "Failed to write chunk to packet [%d]\n", (int)  total + readed);
+            // fprintf(stderr, "Failed to write chunk to packet [%d]\n", (int)  total + readed);
+            fprintf(stderr, "Failed to write chunk to packet [%llu]\n", (unsigned long long)(total + readed));
 
             clearPacket(packet);
-            packetWriteString( packet, MSG_ERROR, "Internal packet write failure");
 
             fc_close(file);
             return -5;
@@ -154,7 +154,7 @@ int sendFile(ms_socket_t sock, Packet* packet, const char* filePath){
         return -4;
     }
     
-    setPacketType(packet, MSG_EOF);
+    sendTypedHeader(sock, MSG_EOF);
 
     return 0;
 }
@@ -171,8 +171,8 @@ int recvFile(ms_socket_t sock, Packet* packet, const char* dstPath){
 
     //====  Recv file infos  ====
     if( recvFileInfos(sock, packet, &fsize, &numChunks) < 0){
-        fprintf(stderr, "Error receiving file infos\n");
-        fc_close(file);
+        // fprintf(stderr, "Error receiving file infos\n");
+        fc_close(file); 
         return -2;
     }
 
@@ -243,5 +243,3 @@ int recvFile(ms_socket_t sock, Packet* packet, const char* dstPath){
 
     return 0;
 }
-
-

@@ -65,6 +65,18 @@ int isPathSeparator(char ch){
 
 int existsDirectory(const char* path){
 
+    if( !path )
+        return false;
+
+
+    #ifdef _WIN32
+
+    DWORD attr = GetFileAttributesA(path);
+
+    return (attr != INVALID_FILE_ATTRIBUTES) && (attr & FILE_ATTRIBUTE_DIRECTORY);
+
+    #else
+
     struct stat info;
 
     if (stat(path, &info) != 0) {
@@ -72,6 +84,8 @@ int existsDirectory(const char* path){
     }
 
     return (info.st_mode & S_IFDIR) != 0;
+
+    #endif
 }
 
 int existsFile(const char* path){
@@ -124,3 +138,18 @@ int buildPath( char* dst, size_t dstSize, const char* baseFolder, const char* re
     return ( written >= 0 && (size_t)written < dstSize );
 }
 
+const char* fc_getName(const char* path){
+
+    if(path == NULL)
+        return NULL;
+
+    const char* slash1 = strrchr(path, '/');
+    const char* slash2 = strrchr(path, '\\');
+
+    const char* last = slash1;
+
+    if(slash2 != NULL && (last == NULL || slash2 > last))
+        last = slash2;
+
+    return (last == NULL) ? path : last + 1;
+}

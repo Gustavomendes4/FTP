@@ -3,7 +3,9 @@
 
     Futuramente: usar size_t para arquivos maiores que 2GB, nas funções send_all e rcv_all;
 
+    definição da struct de endereço, usada exclusivamente para UDP.
 
+    UDP pode ser usada tambem com conect + send/recv
 
 
 */
@@ -41,8 +43,11 @@ void ms_close(ms_socket_t sock){
 }
 
 // ================  Socket  ================
-ms_socket_t ms_socket_create(){
-    return socket(AF_INET, SOCK_STREAM, 0);
+ms_socket_t ms_socket_create(ms_protocol_t protocol){
+
+    int type = (protocol == MS_UDP) ? SOCK_DGRAM : SOCK_STREAM;
+
+    return socket(AF_INET, type, 0);
 
     /*
         af | domain:
@@ -206,7 +211,7 @@ long int ms_recv_all(ms_socket_t sock, void* buffer, size_t size) {
 
 // ================  Other  ================
 
-int ms_last_error() {
+int ms_last_error(){
 #ifdef _WIN32
     return WSAGetLastError();
 #else
@@ -229,3 +234,51 @@ int ms_isValidIp(const char* ip) {
 
 }   
 
+// ================  UDP only  ================
+
+int ms_new_addr(ms_addr_t* out, const char* ip, uint16_t port){
+
+    memset(out,0,sizeof(ms_addr_t));
+
+    out->addr.sin_family = AF_INET;
+    out->addr.sin_port = htons(port);
+
+    if(inet_pton(AF_INET, ip, &out->addr.sin_addr)!=1)
+        return -1;
+
+    return 0;
+}
+
+int ms_sendto(ms_socket_t socket, const void* buffer, size_t size, const ms_addr_t* addr){
+
+    return sendto(
+        socket,
+        buffer,
+        (int)size,
+        0,
+        &addr->addr,
+        sizeof(addr->addr)
+    );
+
+}
+
+int ms_recvfrom(ms_socket_t socket, void* buffer, size_t size, ms_addr_t* from){
+
+    #ifdef _WIN32
+    int len = sizeof(from->addr);
+
+    #else
+    socklen_t len = sizeof(from->addr);
+
+    #endif
+
+    return recvfrom(
+        socket,
+        buffer,
+        size,
+        0,
+        from,
+        len
+    );
+
+}

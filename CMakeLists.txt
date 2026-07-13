@@ -13,7 +13,9 @@ add_subdirectory(libs/utils)
 
 # Executável client
 add_executable(client
-    src/client.c
+    src/client/client.c
+
+    src/client/clientHandlers.c
 
     src/transfer.c
 
@@ -21,9 +23,9 @@ add_executable(client
 
 # Executável server
 add_executable(server
-    src/server.c
+    src/server/server.c
     
-    src/serverHandlers.c
+    src/server/serverHandlers.c
 
     src/transfer.c
 
